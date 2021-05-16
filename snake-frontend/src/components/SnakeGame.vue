@@ -1,151 +1,70 @@
 <template>
-  <div class="App">
-    <header class="App-header">
-      <template v-if="!initialize">
-        <img src="../assets/logo.png" class="App-logo" alt="logo" />
-        <div @click="initializeGame" class="flex">
-          <a href="#1" class="bttn">Initialize</a>
-        </div>
-      </template>
-      <ion-phaser
-          v-bind:game.prop="game"
-          v-bind:initialize.prop="initialize"
-      />
-    </header>
+  <div v-if="downloaded" class="d-flex flex-column">
+    <div :id="containerId"/>
+    <v-btn @click="increment">{{ playerName }}:{{ count }}</v-btn>
   </div>
+  <div class="placeholder" v-else>
+    Loading ...
+  </div>
+
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
 
-import config from "../phaser/config";
-import Game  from "../phaser/scenes/gameScene"
+import { defineComponent,computed } from 'vue';
+import { useStore } from "vuex";
+import * as phaser from "phaser";
 
+class Data {
+  downloaded : boolean;
+  gameInstance : phaser.Game | null
+  containerId: string
+  constructor(gI : phaser.Game | null, cI : string) {
+      this.gameInstance = gI;
+      this.containerId = cI;
+      this.downloaded = false;
+  }
+}
 
 export default defineComponent({
-  name: 'SnakeGame',
+  setup() {
+    const store = useStore();
+    const count = computed(() => store.state.count);
+    const playerName = computed(() => store.state.name);
 
-  data() {
-    return {
-      initialize : false,
-      game: {
-          ...config,
-          scene: Game
-          },
-    };
+    function increment() : void {
+      store.commit("increment");
+    }
+      return { count, increment, playerName };
   },
-  methods : {
-    initializeGame() {
-      this.initialize = true
-    },
-
+  name: 'Game',
+  store : undefined,
+  data() {
+    return new Data(
+       null,
+       "game-container"
+    )
+  },
+  async mounted() {
+    const game = await import(/* webpackChunkName: "game" */ '@/phaser/game')
+    this.downloaded = true
+    await this.$nextTick(() => {
+      this.gameInstance = game.launch(this.containerId)
+    })
+  },
+  unmounted() {
+    if (this.gameInstance !== null){
+      this.gameInstance.destroy(false);
+    }
   }
 });
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
+
 <style scoped>
-.App {
-  text-align: center;
-}
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 26vmin;
-  pointer-events: none;
-  margin: 50px;
-}
-.App-header {
-  background-color: #F5F0FF;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: #282c34;
-}
-.App-link {
-  color: #61dafb;
-}
-.dark {
-  background: #24252A;
-}
-.flex {
-  min-height: 12vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-a.bttn {
-  color: #FF0072;
-  text-decoration: none;
-  -webkit-transition: 0.3s all ease;
-  transition: 0.3s ease all;
-}
-a.bttn:hover {
-  color: #FFF;
-}
-a.bttn:focus {
-  color: #FFF;
-}
-a.bttn-dark {
-  color: #644cad;
-  text-decoration: none;
-  -webkit-transition: 0.3s all ease;
-  transition: 0.3s ease all;
-}
-a.bttn-dark:hover {
-  color: #FFF;
-}
-a.bttn-dark:focus {
-  color: #FFF;
-}
-.bttn {
-  font-size: 18px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  display: inline-block;
-  text-align: center;
-  width: 270px;
-  font-weight: bold;
-  padding: 14px 0px;
-  border: 3px solid #FF0072;
-  border-radius: 2px;
-  position: relative;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.1);
-}
-.bttn:before {
-  -webkit-transition: 0.5s all ease;
-  transition: 0.5s all ease;
-  position: absolute;
-  top: 0;
-  left: 50%;
-  right: 50%;
-  bottom: 0;
-  opacity: 0;
-  content: '';
-  background-color: #FF0072;
-  z-index: -2;
-}
-.bttn:hover:before {
-  -webkit-transition: 0.5s all ease;
-  transition: 0.5s all ease;
-  left: 0;
-  right: 0;
-  opacity: 1;
-}
-.bttn:focus:before {
-  transition: 0.5s all ease;
-  left: 0;
-  right: 0;
-  opacity: 1;
-}
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.placeholder {
+  font-size: 2rem;
+  font-family: 'Courier New', Courier, monospace;
 }
 </style>

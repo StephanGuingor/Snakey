@@ -1,19 +1,16 @@
 import Phaser from 'phaser';
 
+import store from "@/store/index"
+
 export default class GameScene extends Phaser.Scene {
 
     constructor() {
-        super('Game');
-
+        super({key: 'SnakeGame' })
     }
 
     init() : void {
         this.cameras.main.setBackgroundColor('#24252A')
         console.log("HELLO")
-    }
-
-    preload() : void {
-        this.load.image('logo', '../assets/logo.png');
     }
 
     create() : void {
@@ -34,7 +31,8 @@ export default class GameScene extends Phaser.Scene {
 
         const cursors = this.input.keyboard.createCursorKeys();
         if (cursors.down.isDown) {
-            console.log("Hello DOen")
+            console.log(store.commit("increment"));
+
         }
         }
     }
