@@ -1,8 +1,22 @@
 <template>
   <div v-if="downloaded" class="d-flex flex-column">
+
     <div :id="containerId"/>
-    <v-btn @click="increment">{{ playerName }}:{{ count }}</v-btn>
-  </div>
+    <div class="score">
+      <h2> SCORE : {{ currentScore }} </h2>
+    </div>
+    <div class="retry" v-if="endScene">
+      <h2 style="color: antiquewhite">Score: {{ currentScore }} </h2>
+      <v-btn class="m-auto" @click="startScene"> Play Again </v-btn>
+    </div>
+
+      <div>
+        <p>Highscores for {{ playerName }}</p>
+        <ul class="list">
+          <li class="item" v-for="(score,index) in scores " :key="index" ><b>{{ index+1 }}. </b>{{ score }}</li>
+        </ul>
+      </div>
+    </div>
   <div class="placeholder" v-else>
     Loading ...
   </div>
@@ -14,6 +28,7 @@
 import { defineComponent,computed } from 'vue';
 import { useStore } from "vuex";
 import * as phaser from "phaser";
+import userService from "@/services/UserService"
 
 class Data {
   downloaded : boolean;
@@ -30,15 +45,22 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const count = computed(() => store.state.count);
+    const scores = computed(() => store.state.scores);
     const playerName = computed(() => store.state.name);
+    const currentScore = computed(() => store.state.currentScore);
+    const endScene = computed(() => store.state.endScene);
 
-    function increment() : void {
-      store.commit("increment");
+    function startScene() : void {
+      store.commit("setEndScene",false);
+      store.commit("setRestartScene",true);
     }
-      return { count, increment, playerName };
+
+      return { count,startScene, playerName,scores,currentScore,endScene };
   },
   name: 'Game',
   store : undefined,
+  methods: {
+  },
   data() {
     return new Data(
        null,
@@ -51,6 +73,9 @@ export default defineComponent({
     await this.$nextTick(() => {
       this.gameInstance = game.launch(this.containerId)
     })
+    await userService.getScores();
+
+
   },
   unmounted() {
     if (this.gameInstance !== null){
@@ -66,5 +91,21 @@ export default defineComponent({
 .placeholder {
   font-size: 2rem;
   font-family: 'Courier New', Courier, monospace;
+}
+
+.list{
+  display: flex;
+  flex-direction: row;
+}
+
+.item {
+  margin: 2rem;
+}
+
+.retry {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
 }
 </style>
