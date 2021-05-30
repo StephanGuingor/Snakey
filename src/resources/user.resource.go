@@ -13,20 +13,9 @@ import (
 func AllUserScores(w http.ResponseWriter, r *http.Request) {
 	// We will attempt to send json data
 	w.Header().Set("Content-Type", "application/json")
-	// Decode username into user object
-	decoder := json.NewDecoder(r.Body)
-	user := schemas.User{}
-	err := decoder.Decode(&user)
-	// Verify decode went well
-	if err!=nil {
-		w.WriteHeader(400) // bad request
-		// Will be filled by different errors
-		errMap := make(map[string]string)
-		errMap["error"] = "Invalid Data"
-		msgError, _ := json.Marshal(errMap)
-		w.Write(msgError)
-		return
-	}
+
+	user := schemas.User{ Username: r.URL.Query().Get("name")}
+
 	// Validates user data received by client
 	if  !user.Validate() {
 		w.WriteHeader(400) // bad request

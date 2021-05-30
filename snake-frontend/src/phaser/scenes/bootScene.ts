@@ -12,7 +12,7 @@ export default class BootScene extends Scene {
     constructor () {
         super({ key: 'BootScene' })
     }
-
+    // Loads all data
     preload () : void {
         this.load.image('logo', logo)
         this.load.image('sky', sky)
@@ -20,8 +20,6 @@ export default class BootScene extends Scene {
         this.load.image('snake_body', snakeBody)
         this.load.image('red_apple', redApple)
         this.load.image('green_apple', greenApple)
-        // this.load.image('bomb', bomb)
-        // this.load.audio('thud', [thudMp3, thudOgg])
     }
 
     create () : void {

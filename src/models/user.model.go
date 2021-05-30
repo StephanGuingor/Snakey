@@ -8,10 +8,15 @@ import (
 
 func FindUserByUsername(name string) (schemas.User,error) {
 	db := config.GetDB()
-	var result schemas.User
+	var result = schemas.User{Username: name}
 	if  err := db.Preload("Scores",func(db *gorm.DB) *gorm.DB {
-		return db.Order("scores.points DESC")
+		return db.Order("scores.points DESC").Limit(5)
 	}).Where("username = ?",name).First(&result).Error; err != nil {
+
+		if  gorm.IsRecordNotFoundError(err) {
+			db.Create(&result)
+		}
+
 		return result,err
 	}
 	return result,nil

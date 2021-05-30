@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-var DB *gorm.DB
+var dB *gorm.DB
 
 func InitDB() {
 	// This should be protected
@@ -27,9 +27,9 @@ func InitDB() {
 	db.LogMode(true)
 	db.AutoMigrate(&schemas.User{},&schemas.Score{})
 
-	DB = db
+	dB = db
 }
 
 func GetDB() *gorm.DB {
-	return DB
+	return dB
 }

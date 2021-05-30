@@ -36,7 +36,7 @@ import {defineComponent} from 'vue';
 import SnakeGame from "@/components/SnakeGame.vue";
 import {useStore} from "vuex";
 
-
+// Entry Point, where user will choose their username and link with database.
 export default defineComponent({
   name: 'App',
   setup() {

@@ -2,6 +2,7 @@ import axios from "axios";
 
 import store from "@/store/index"
 
+// Functions to connect with the go API and modifying store data.
 export default {
     getScores() : void {
         // GET request for remote image in node.js

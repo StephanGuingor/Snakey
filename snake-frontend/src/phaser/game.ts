@@ -2,9 +2,9 @@ import Phaser from 'phaser';
 
 import BootScene from "@/phaser/scenes/bootScene";
 import GameScene from "@/phaser/scenes/gameScene";
-import EndScene from "@/phaser/scenes/endScene";
 
 
+// Sets Game information.
 function launch(containerId : string) : Phaser.Game {
     return new Phaser.Game({
         type: Phaser.AUTO,
@@ -19,7 +19,7 @@ function launch(containerId : string) : Phaser.Game {
                 debug: false
             }
         },
-        scene: [ BootScene, GameScene, EndScene ],
+        scene: [ BootScene, GameScene ],
 
     })
 }

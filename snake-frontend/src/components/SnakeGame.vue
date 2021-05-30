@@ -43,6 +43,7 @@ class Data {
 
 export default defineComponent({
   setup() {
+    // Global properties
     const store = useStore();
     const count = computed(() => store.state.count);
     const scores = computed(() => store.state.scores);
@@ -67,6 +68,8 @@ export default defineComponent({
        "game-container"
     )
   },
+
+  // Load the game
   async mounted() {
     const game = await import(/* webpackChunkName: "game" */ '@/phaser/game')
     this.downloaded = true
@@ -77,6 +80,7 @@ export default defineComponent({
 
 
   },
+  // Destroy game
   unmounted() {
     if (this.gameInstance !== null){
       this.gameInstance.destroy(false);
@@ -107,5 +111,9 @@ export default defineComponent({
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
+}
+
+.score h2 {
+  font-size: 1.6rem;
 }
 </style>
